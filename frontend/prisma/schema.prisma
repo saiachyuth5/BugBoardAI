@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models for our application
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email         String    @unique @db.VarChar(255)
+  password_hash String?   @db.VarChar(255)
+  full_name     String?   @db.VarChar(255)
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime  @updatedAt @db.Timestamptz(6)
+  user_roles    UserRole[]
+  bugs_reported Bug[]     @relation("reported_by_user")
+  bugs_assigned Bug[]     @relation("assigned_to_user")
+  comments      Comment[]
+  audit_logs    AuditLog[]
+}
+
+model Role {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar(50)
+  description String?   @db.Text
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @updatedAt @db.Timestamptz(6)
+  user_roles  UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String          @unique @db.VarChar(100)
+  description String?         @db.Text
+  created_at  DateTime        @default(now()) @db.Timestamptz(6)
+  role_perms  RolePermission[]
+}
+
+model UserRole {
+  user_id    String   @db.Uuid
+  role_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role       Role     @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, role_id])
+}
+
+model RolePermission {
+  role_id       String     @db.Uuid
+  permission_id String     @db.Uuid
+  created_at    DateTime   @default(now()) @db.Timestamptz(6)
+  role         Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+
+  @@id([role_id, permission_id])
+}
+
+model Bug {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String    @db.VarChar(255)
+  description  String?   @db.Text
+  status       String    @default("open") @db.VarChar(50)
+  severity     String    @default("medium") @db.VarChar(50)
+  priority     String?   @db.VarChar(50)
+  reported_by  String    @db.Uuid
+  assigned_to  String?   @db.Uuid
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime  @updatedAt @db.Timestamptz(6)
+  reporter     User      @relation("reported_by_user", fields: [reported_by], references: [id])
+  assignee     User?     @relation("assigned_to_user", fields: [assigned_to], references: [id])
+  comments     Comment[]
+  attachments  Attachment[]
+}
+
+model Comment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content    String   @db.Text
+  user_id    String   @db.Uuid
+  bug_id     String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+  user       User     @relation(fields: [user_id], references: [id])
+  bug        Bug      @relation(fields: [bug_id], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  filename    String   @db.VarChar(255)
+  filepath    String   @db.VarChar(500)
+  filetype    String?  @db.VarChar(100)
+  filesize    Int?     @default(0)
+  bug_id      String   @db.Uuid
+  uploaded_by String   @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  bug         Bug      @relation(fields: [bug_id], references: [id], onDelete: Cascade)
+  uploader    User     @relation(fields: [uploaded_by], references: [id])
+}
+
+model AuditLog {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String?  @db.Uuid
+  action         String   @db.VarChar(100)
+  entity_type    String   @db.VarChar(50)
+  entity_id      String?  @db.VarChar(50)
+  old_values     Json?
+  new_values     Json?
+  url            String?  @db.VarChar(500)
+  ip_address     String?  @db.VarChar(50)
+  user_agent     String?  @db.Text
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  user           User?    @relation(fields: [user_id], references: [id])
+}

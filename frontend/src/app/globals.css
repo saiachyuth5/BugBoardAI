@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Custom styles for code blocks */
+pre {
+  @apply bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto text-sm my-4;
+}
+
+code {
+  @apply bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+
+/* Custom styles for markdown content */
+.markdown-content h1 {
+  @apply text-3xl font-bold my-6;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-semibold my-5;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-medium my-4;
+}
+
+.markdown-content p {
+  @apply my-3 leading-relaxed;
+}
+
+.markdown-content a {
+  @apply text-primary-600 hover:underline;
+}
+
+.markdown-content ul, .markdown-content ol {
+  @apply my-4 pl-6;
+}
+
+.markdown-content li {
+  @apply my-2;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -1,0 +1,30 @@
+{
+  "name": "bugboard-ai-agent-plugin",
+  "version": "1.0.0",
+  "description": "Plugin for AI agents to report bugs to BugBoard AI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "bug",
+    "reporting"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
+    "jest": "^29.6.2",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.1.6"
+  }
+}
